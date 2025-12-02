@@ -111,7 +111,7 @@ export const analyzeBill = async (
   contextFile?: File | null, 
   customInstructions?: string
 ): Promise<AnalysisResult> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
   const parts: any[] = [];
 
