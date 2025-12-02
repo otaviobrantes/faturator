@@ -111,12 +111,8 @@ export const analyzeBill = async (
   contextFile?: File | null, 
   customInstructions?: string
 ): Promise<AnalysisResult> => {
-  const apiKey = process.env.API_KEY;
-  if (!apiKey) {
-    throw new Error("API Key not found in environment variables.");
-  }
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
 
-  const ai = new GoogleGenAI({ apiKey });
   const parts: any[] = [];
 
   // 1. Add Context File (if provided) - "Few-shot" visual example
