@@ -111,7 +111,16 @@ export const analyzeBill = async (
   contextFile?: File | null, 
   customInstructions?: string
 ): Promise<AnalysisResult> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  
+  // VERIFICAÇÃO CRÍTICA DA CHAVE
+  const apiKey = process.env.API_KEY;
+  if (!apiKey || apiKey.length === 0 || apiKey.includes("undefined")) {
+    throw new Error(
+      "API Key não configurada! Vá no Vercel > Settings > Environment Variables, adicione 'API_KEY' e faça um REDEPLOY."
+    );
+  }
+
+  const ai = new GoogleGenAI({ apiKey: apiKey });
 
   const parts: any[] = [];
 
@@ -150,13 +159,16 @@ export const analyzeBill = async (
 
     const text = response.text;
     if (!text) {
-      throw new Error("No response text received from Gemini.");
+      throw new Error("O Gemini não retornou nenhum texto. Tente novamente.");
     }
 
     return JSON.parse(text) as AnalysisResult;
 
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error analyzing bill:", error);
+    if (error.message && error.message.includes("API key not valid")) {
+      throw new Error("Chave de API inválida. Verifique sua API_KEY no Vercel.");
+    }
     throw error;
   }
 };
